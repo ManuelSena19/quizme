@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:quizme_app_demo/login_view.dart';
+import 'login_view.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -11,10 +11,10 @@ class MyApp extends StatelessWidget {
 
   static const String _title = 'QuizMe';
 
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: ThemeData.dark(),
       title: _title,
       home: const Scaffold(
