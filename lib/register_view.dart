@@ -1,34 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:quizme_app_demo/services/storage.dart';
 import 'homepage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({Key? key}) : super(key: key);
-
   @override
   State<RegisterView> createState() => _RegisterViewState();
 }
 
 class _RegisterViewState extends State<RegisterView> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final _auth = FirebaseAuth.instance;
+  final SecureStorage secureStorage = SecureStorage();
+  final _firestore = FirebaseFirestore.instance;
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   String? gender;
-
-
+  String? get displayName => _auth.currentUser?.displayName;
+  set displayName(String? name){}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("QuizMe")),
+      appBar: AppBar(
+          title: const Text("QuizMe"), backgroundColor: Colors.lightBlue),
       body: StreamBuilder<User?>(
-        stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData){
-            return const Text('Verify');
-          }
-          else {
+          stream: FirebaseAuth.instance.authStateChanges(),
+          builder: (context, snapshot) {
             return Padding(
               padding: const EdgeInsets.all(10),
               child: ListView(
@@ -59,7 +59,8 @@ class _RegisterViewState extends State<RegisterView> {
                       controller: usernameController,
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(50))),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(50))),
                         labelText: 'Username',
                       ),
                     ),
@@ -73,7 +74,8 @@ class _RegisterViewState extends State<RegisterView> {
                       controller: passwordController,
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(50))),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(50))),
                         labelText: 'Password',
                       ),
                     ),
@@ -86,7 +88,8 @@ class _RegisterViewState extends State<RegisterView> {
                       controller: emailController,
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(50))),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(50))),
                         labelText: 'E-mail',
                       ),
                     ),
@@ -111,7 +114,7 @@ class _RegisterViewState extends State<RegisterView> {
                       groupValue: gender,
                       onChanged: (value) {
                         setState(
-                              () {
+                          () {
                             gender = value.toString();
                           },
                         );
@@ -127,11 +130,18 @@ class _RegisterViewState extends State<RegisterView> {
                         String email = emailController.text;
                         String password = passwordController.text;
                         String sex = gender!;
-                        try {
-                          _auth.createUserWithEmailAndPassword(email: email, password: password);
-                        }
-                        on FirebaseAuthException catch (e){
-                          print(e);
+                        try{
+                          _auth.createUserWithEmailAndPassword(
+                              email: email, password: password);
+                          _firestore.collection('users').add({
+                            'username' : username,
+                            'email' : email,
+                            'sex' : sex
+                          });
+                        } on FirebaseAuthException catch (e){
+                          if(e.code == ''){
+
+                          }
                         }
                         Navigator.push(context, MaterialPageRoute(
                           builder: (context) {
@@ -159,9 +169,9 @@ class _RegisterViewState extends State<RegisterView> {
                 ],
               ),
             );
-          }
-        }
-      ),
+          }),
     );
   }
+
 }
+
