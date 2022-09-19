@@ -226,10 +226,10 @@ final _questions = [
   {
     'question': "Which of the following virtual machine is used by the Android operating system?",
     'answers': [
-      {'answerText': 'JVM Dalvik virtual machine', 'score': false},
+      {'answerText': 'JVM Dalvik virtual machine', 'score': true},
       {
         'answerText': 'Simple virtual machine',
-        'score': true
+        'score': false
       },
       {
         'answerText': 'None of the above',
